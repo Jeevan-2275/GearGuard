@@ -16,9 +16,14 @@ const Equipment = sequelize.define('Equipment', {
         allowNull: false,
         unique: true
     },
-    category: {
+    type: {
         type: DataTypes.STRING(50),
         allowNull: false
+    },
+    status: {
+        type: DataTypes.ENUM('operational', 'under_maintenance', 'broken', 'scrapped'),
+        allowNull: false,
+        defaultValue: 'operational'
     },
     purchase_date: {
         type: DataTypes.DATE,

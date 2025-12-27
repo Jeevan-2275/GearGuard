@@ -11,8 +11,14 @@ import SessionExpiredPage from './pages/Auth/SessionExpiredPage';
 // Common Pages
 import Dashboard from './pages/Common/Dashboard';
 
-// Import other pages as we create them
-// Equipment, Teams, Requests, Calendar, Admin, etc.
+// Equipment Pages
+import EquipmentList from './pages/Equipment/EquipmentList';
+
+// Request Pages
+import KanbanBoard from './pages/Requests/KanbanBoard';
+
+// Admin Pages
+import AdminPage from './pages/Admin/AdminPage';
 
 import './App.css';
 
@@ -38,10 +44,10 @@ function App() {
                       <Route path="/dashboard" element={<Dashboard />} />
 
                       {/* Equipment Routes */}
-                      {/* <Route path="/equipment" element={<EquipmentListPage />} /> */}
+                      <Route path="/equipment" element={<EquipmentList />} />
 
                       {/* Request Routes */}
-                      {/* <Route path="/requests" element={<KanbanBoardPage />} /> */}
+                      <Route path="/requests" element={<KanbanBoard />} />
 
                       {/* Calendar Routes */}
                       {/* <Route path="/calendar" element={<CalendarViewPage />} /> */}
@@ -50,7 +56,14 @@ function App() {
                       {/* <Route path="/teams" element={<TeamListPage />} /> */}
 
                       {/* Admin Routes */}
-                      {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+                      <Route
+                        path="/admin"
+                        element={
+                          <ProtectedRoute roles={['admin']}>
+                            <AdminPage />
+                          </ProtectedRoute>
+                        }
+                      />
 
                       {/* Default redirect */}
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />

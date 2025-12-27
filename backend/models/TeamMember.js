@@ -22,6 +22,11 @@ const TeamMember = sequelize.define('TeamMember', {
             model: 'users',
             key: 'id'
         }
+    },
+    role: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        defaultValue: 'member'
     }
 }, {
     tableName: 'team_members',

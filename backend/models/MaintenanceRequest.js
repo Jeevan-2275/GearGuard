@@ -20,6 +20,11 @@ const MaintenanceRequest = sequelize.define('MaintenanceRequest', {
         allowNull: false,
         defaultValue: 'corrective'
     },
+    priority: {
+        type: DataTypes.ENUM('low', 'medium', 'high'),
+        allowNull: false,
+        defaultValue: 'medium'
+    },
     stage: {
         type: DataTypes.ENUM('new', 'in_progress', 'repaired', 'scrap'),
         allowNull: false,

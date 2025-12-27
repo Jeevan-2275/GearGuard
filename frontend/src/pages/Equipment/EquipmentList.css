@@ -1,0 +1,100 @@
+.equipment-page {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.add-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.table-actions {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.search-bar input {
+    padding: 8px;
+    width: 300px;
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.status-operational {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-maintenance {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-broken {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-scrapped {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.item-name {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.item-details {
+    font-size: 0.9rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.detail-item .label {
+    font-weight: bold;
+    color: #666;
+}
+
+.card-footer {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.view-btn,
+.edit-btn {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    background: #f8f9fa;
+    cursor: pointer;
+}
