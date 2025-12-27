@@ -20,6 +20,12 @@ import KanbanBoard from './pages/Requests/KanbanBoard';
 // Admin Pages
 import AdminPage from './pages/Admin/AdminPage';
 
+// Calendar Pages
+import CalendarViewPage from './pages/Calendar/CalendarViewPage';
+
+// Team Pages
+import TeamListPage from './pages/Teams/TeamListPage';
+
 import './App.css';
 
 function App() {
@@ -50,10 +56,10 @@ function App() {
                       <Route path="/requests" element={<KanbanBoard />} />
 
                       {/* Calendar Routes */}
-                      {/* <Route path="/calendar" element={<CalendarViewPage />} /> */}
+                      <Route path="/calendar" element={<CalendarViewPage />} />
 
                       {/* Team Routes */}
-                      {/* <Route path="/teams" element={<TeamListPage />} /> */}
+                      <Route path="/teams" element={<TeamListPage />} />
 
                       {/* Admin Routes */}
                       <Route
