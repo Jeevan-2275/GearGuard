@@ -4,7 +4,7 @@ const Equipment = require('../models/Equipment');
 // @desc    Get all requests
 // @route   GET /api/requests
 // @access  Private
-exports.getRequests = async (req, res) => {
+exports.getAllRequests = async (req, res) => {
     try {
         let query;
 
@@ -112,6 +112,62 @@ exports.deleteRequest = async (req, res) => {
         await request.deleteOne();
 
         res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Change request stage
+// @route   PUT /api/requests/:id/stage
+// @access  Private
+exports.changeStage = async (req, res) => {
+    try {
+        const { stage } = req.body;
+        let request = await MaintenanceRequest.findById(req.params.id);
+
+        if (!request) {
+            return res.status(404).json({ success: false, message: 'Request not found' });
+        }
+
+        request.stage = stage;
+        if (stage === 'repaired') {
+            request.completion_date = Date.now();
+        }
+
+        await request.save();
+
+        res.status(200).json({ success: true, data: request });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get calendar requests
+// @route   GET /api/requests/calendar
+// @access  Private
+exports.getCalendarRequests = async (req, res) => {
+    try {
+        const requests = await MaintenanceRequest.find({
+            scheduled_date: { $exists: true, $ne: null }
+        }).select('subject scheduled_date type');
+
+        res.status(200).json({ success: true, count: requests.length, data: requests });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get overdue requests
+// @route   GET /api/requests/overdue
+// @access  Private
+exports.getOverdueRequests = async (req, res) => {
+    try {
+        const requests = await MaintenanceRequest.find({
+            scheduled_date: { $lt: new Date() },
+            stage: { $in: ['new', 'in-progress'] }
+        });
+
+        res.status(200).json({ success: true, count: requests.length, data: requests });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

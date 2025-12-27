@@ -3,7 +3,7 @@ const User = require('../models/user');
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private/Admin
-exports.getUsers = async (req, res) => {
+exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find();
         res.status(200).json({ success: true, count: users.length, data: users });
@@ -17,7 +17,25 @@ exports.getUsers = async (req, res) => {
 // @access  Private/Admin
 exports.createUser = async (req, res) => {
     try {
-        const user = await User.create(req.body);
+        const { name, email, password, role, avatar } = req.body;
+
+        // Check if user exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ success: false, message: 'User already exists' });
+        }
+
+        const user = await User.create({
+            name,
+            email,
+            password,
+            role,
+            avatar
+        });
+
+        // Remove password from response
+        user.password = undefined;
+
         res.status(201).json({ success: true, data: user });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -58,6 +76,35 @@ exports.deleteUser = async (req, res) => {
         await user.deleteOne();
 
         res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get single user
+// @route   GET /api/users/:id
+// @access  Private
+exports.getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        res.status(200).json({ success: true, data: user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get technicians
+// @route   GET /api/users/technicians
+// @access  Private
+exports.getTechnicians = async (req, res) => {
+    try {
+        const technicians = await User.find({ role: 'technician' });
+        res.status(200).json({ success: true, count: technicians.length, data: technicians });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

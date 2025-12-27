@@ -3,7 +3,7 @@ const MaintenanceTeam = require('../models/MaintenanceTeam');
 // @desc    Get all teams
 // @route   GET /api/teams
 // @access  Private
-exports.getTeams = async (req, res) => {
+exports.getAllTeams = async (req, res) => {
     try {
         const teams = await MaintenanceTeam.find().populate('members', 'name email role');
         res.status(200).json({ success: true, count: teams.length, data: teams });
@@ -81,6 +81,43 @@ exports.addTeamMember = async (req, res) => {
         }
 
         team.members.push(userId);
+        await team.save();
+
+        res.status(200).json({ success: true, data: team });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get single team
+// @route   GET /api/teams/:id
+// @access  Private
+exports.getTeam = async (req, res) => {
+    try {
+        const team = await MaintenanceTeam.findById(req.params.id).populate('members', 'name email role');
+
+        if (!team) {
+            return res.status(404).json({ success: false, message: 'Team not found' });
+        }
+
+        res.status(200).json({ success: true, data: team });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Remove member from team
+// @route   DELETE /api/teams/:id/members/:userId
+// @access  Private/Admin
+exports.removeTeamMember = async (req, res) => {
+    try {
+        const team = await MaintenanceTeam.findById(req.params.id);
+
+        if (!team) {
+            return res.status(404).json({ success: false, message: 'Team not found' });
+        }
+
+        team.members = team.members.filter(member => member.toString() !== req.params.userId);
         await team.save();
 
         res.status(200).json({ success: true, data: team });

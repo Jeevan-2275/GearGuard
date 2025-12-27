@@ -3,7 +3,7 @@ const Equipment = require('../models/Equipment');
 // @desc    Get all equipment
 // @route   GET /api/equipment
 // @access  Private
-exports.getEquipment = async (req, res) => {
+exports.getAllEquipment = async (req, res) => {
     try {
         let query;
 
@@ -30,7 +30,7 @@ exports.getEquipment = async (req, res) => {
 // @desc    Get single equipment
 // @route   GET /api/equipment/:id
 // @access  Private
-exports.getEquipmentById = async (req, res) => {
+exports.getEquipment = async (req, res) => {
     try {
         const equipment = await Equipment.findById(req.params.id)
             .populate('department', 'name')
@@ -95,6 +95,35 @@ exports.deleteEquipment = async (req, res) => {
         await equipment.deleteOne();
 
         res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get equipment requests
+// @route   GET /api/equipment/:id/requests
+// @access  Private
+exports.getEquipmentRequests = async (req, res) => {
+    try {
+        const MaintenanceRequest = require('../models/MaintenanceRequest');
+        const requests = await MaintenanceRequest.find({ equipment: req.params.id });
+        res.status(200).json({ success: true, count: requests.length, data: requests });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get open request count
+// @route   GET /api/equipment/:id/open-count
+// @access  Private
+exports.getOpenRequestCount = async (req, res) => {
+    try {
+        const MaintenanceRequest = require('../models/MaintenanceRequest');
+        const count = await MaintenanceRequest.countDocuments({
+            equipment: req.params.id,
+            stage: { $in: ['new', 'in-progress'] }
+        });
+        res.status(200).json({ success: true, count });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
