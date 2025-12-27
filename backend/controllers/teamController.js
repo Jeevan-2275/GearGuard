@@ -12,6 +12,23 @@ exports.getAllTeams = async (req, res) => {
     }
 };
 
+// @desc    Get single team
+// @route   GET /api/teams/:id
+// @access  Private
+exports.getTeam = async (req, res) => {
+    try {
+        const team = await MaintenanceTeam.findById(req.params.id).populate('members', 'name email role');
+
+        if (!team) {
+            return res.status(404).json({ success: false, message: 'Team not found' });
+        }
+
+        res.status(200).json({ success: true, data: team });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 // @desc    Create team
 // @route   POST /api/teams
 // @access  Private/Admin
@@ -115,6 +132,11 @@ exports.removeTeamMember = async (req, res) => {
 
         if (!team) {
             return res.status(404).json({ success: false, message: 'Team not found' });
+        }
+
+        // Check if member exists
+        if (!team.members.includes(req.params.userId)) {
+            return res.status(400).json({ success: false, message: 'User not in team' });
         }
 
         team.members = team.members.filter(member => member.toString() !== req.params.userId);

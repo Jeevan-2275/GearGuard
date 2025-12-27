@@ -130,6 +130,17 @@ exports.changeStage = async (req, res) => {
         }
 
         request.stage = stage;
+
+        // Handle equipment status based on stage
+        if (stage === 'scrap') {
+            const equipment = await Equipment.findById(request.equipment);
+            if (equipment) {
+                equipment.status = 'scrapped';
+                await equipment.save();
+            }
+        }
+
+        await request.save();
         if (stage === 'repaired') {
             request.completion_date = Date.now();
         }
@@ -142,12 +153,15 @@ exports.changeStage = async (req, res) => {
     }
 };
 
+// @desc    Get requests for calendar
 // @desc    Get calendar requests
 // @route   GET /api/requests/calendar
 // @access  Private
 exports.getCalendarRequests = async (req, res) => {
     try {
         const requests = await MaintenanceRequest.find({
+            scheduled_date: { $exists: true }
+        }).populate('equipment', 'name');
             scheduled_date: { $exists: true, $ne: null }
         }).select('subject scheduled_date type');
 
@@ -162,6 +176,11 @@ exports.getCalendarRequests = async (req, res) => {
 // @access  Private
 exports.getOverdueRequests = async (req, res) => {
     try {
+        const today = new Date();
+        const requests = await MaintenanceRequest.find({
+            stage: { $ne: 'completed' },
+            due_date: { $lt: today }
+        }).populate('equipment', 'name');
         const requests = await MaintenanceRequest.find({
             scheduled_date: { $lt: new Date() },
             stage: { $in: ['new', 'in-progress'] }
@@ -172,3 +191,4 @@ exports.getOverdueRequests = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+

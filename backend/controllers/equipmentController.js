@@ -100,12 +100,18 @@ exports.deleteEquipment = async (req, res) => {
     }
 };
 
+// @desc    Get requests for specific equipment
 // @desc    Get equipment requests
 // @route   GET /api/equipment/:id/requests
 // @access  Private
 exports.getEquipmentRequests = async (req, res) => {
     try {
         const MaintenanceRequest = require('../models/MaintenanceRequest');
+        const requests = await MaintenanceRequest.find({ equipment: req.params.id })
+            .populate('assigned_team', 'team_name')
+            .populate('assigned_technician', 'name')
+            .populate('created_by', 'name');
+
         const requests = await MaintenanceRequest.find({ equipment: req.params.id });
         res.status(200).json({ success: true, count: requests.length, data: requests });
     } catch (error) {
@@ -113,6 +119,7 @@ exports.getEquipmentRequests = async (req, res) => {
     }
 };
 
+// @desc    Get open request count for specific equipment
 // @desc    Get open request count
 // @route   GET /api/equipment/:id/open-count
 // @access  Private
@@ -121,6 +128,9 @@ exports.getOpenRequestCount = async (req, res) => {
         const MaintenanceRequest = require('../models/MaintenanceRequest');
         const count = await MaintenanceRequest.countDocuments({
             equipment: req.params.id,
+            status: { $in: ['new', 'in_progress', 'on_hold'] }
+        });
+
             stage: { $in: ['new', 'in-progress'] }
         });
         res.status(200).json({ success: true, count });
@@ -128,3 +138,4 @@ exports.getOpenRequestCount = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
